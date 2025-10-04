@@ -1,0 +1,15 @@
+{
+  "name": "pee-dee-eff",
+  "version": "0.0.1",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.149"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0"
+  }
+}

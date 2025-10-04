@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>PDF Freehand Viewer</title>
+		<link rel="stylesheet" href="styles.css">
+	</head>
+	<body>
+		<div id="toolbar">
+			<button id="previous_page_button" class="toolbar_button">prev</button>
+			<button id="next_page_button" class="toolbar_button">next</button>
+			<button id="zoom_out_button" class="toolbar_button">-</button>
+			<button id="zoom_in_button" class="toolbar_button">+</button>
+			<button id="select_freehand_button" class="toolbar_button">free</button>
+			<button id="select_highlight_button" class="toolbar_button">high</button>
+			<button id="select_text_button" class="toolbar_button">text</button>
+			<button id="save_pdf_button" class="toolbar_button">save</button>
+		</div>
+		<div id="pdf_container">
+			<canvas id="pdf_canvas"></canvas>
+			<canvas id="draw_canvas"></canvas>
+		</div>
+		<script src="renderer.js"></script>
+	</body>
+</html>
