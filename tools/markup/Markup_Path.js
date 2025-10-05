@@ -13,7 +13,7 @@ class Markup_Path {
 			draw_ctx.strokeStyle = this.path_setting.path_color;
 			draw_ctx.lineWidth = this.path_setting.path_size;
 			
-			const path_points_canvas_coords = this.path_points.map ((path_point) => path_point.get_canvas_coords (canvas_height, scale));
+			const path_points_canvas_coords = this.path_points.map (path_point => path_point.get_canvas_coords (canvas_height, scale));
 			
 			// console.log (path_points_canvas_coords);
 
@@ -25,6 +25,10 @@ class Markup_Path {
 				draw_ctx.stroke ();
 			}
 		}
+	}
+
+	get_svg_path () {
+		return this.path_points.map ((path_point, i) => (i === 0 ? `M ${path_point.pdf_x} ${path_point.pdf_y}` : `L ${path_point.pdf_x} ${path_point.pdf_y}`)).join (' ');
 	}
 }
 

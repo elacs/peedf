@@ -1,13 +1,13 @@
 const Markup_Path_Point = require ('../Markup_Path_Point.js')
 
-function freehand (e, current_markup_path, canvas_height, scale) {
+function freehand (e, current_markup_path, current_path_setting, canvas_height, scale) {
 	if (click_held != true) return;
 	const rect = draw_canvas.getBoundingClientRect ();
 	const x = e.clientX - rect.left;
 	const y = e.clientY - rect.top;
 
-	draw_ctx.strokeStyle = 'blue';
-	draw_ctx.lineWidth = 1;
+	draw_ctx.strokeStyle = current_path_setting.path_color;
+	draw_ctx.lineWidth = current_path_setting.path_size;
 	draw_ctx.lineCap = 'round';
 	draw_ctx.beginPath ();
 	draw_ctx.moveTo (last_x, last_y);

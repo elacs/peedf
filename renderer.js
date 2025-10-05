@@ -1,4 +1,4 @@
-const pdfjsLib = require ('pdfjs-dist');
+const pdfjs_dist = require ('pdfjs-dist');
 
 const freehand = require ('./tools/markup/event_listeners/freehand.js');
 const select_markup_mode = require ('./tools/select_markup_mode.js')
@@ -31,7 +31,7 @@ function resize_canvas () {
 }
 
 function render_page (num) {
-	pdf_doc.getPage (num).then(page => {
+	pdf_doc.getPage (num).then ((page) => {
 		const viewport = page.getViewport ({ scale: scale });
 		pdf_canvas.height = viewport.height;
 		pdf_canvas.width = viewport.width;
@@ -49,10 +49,10 @@ function render_page (num) {
 
 resize_canvas ();
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.min.mjs';
+pdfjs_dist.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.min.mjs';
 
 // Render PDF page
-pdfjsLib.getDocument (pdf_url).promise.then (doc => {
+pdfjs_dist.getDocument (pdf_url).promise.then ((doc) => {
 	pdf_doc = doc;
 	render_page (current_page_num);
 });
@@ -94,7 +94,7 @@ document.getElementById ('select_text_button').addEventListener ('click', () => 
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'text');
 });
 
-document.getElementById ('save_pdf_button').addEventListener ('click', () => {save_pdf.save_pdf ();});
+document.getElementById ('save_pdf_button').addEventListener ('click', () => {save_pdf.save_pdf (pdf_url, markup_paths);});
 
 
 // markup event listeners
@@ -112,7 +112,7 @@ let starting_path_point = null;
 let current_markup_path = null;
 let current_path_setting = null;
 
-draw_canvas.addEventListener ('mousedown', e => {
+draw_canvas.addEventListener ('mousedown', (e) => {
 	click_held = true;
 	const rect = draw_canvas.getBoundingClientRect ();
 	last_x = e.clientX - rect.left;
@@ -121,7 +121,7 @@ draw_canvas.addEventListener ('mousedown', e => {
 	starting_path_point = new Markup_Path_Point.Markup_Path_Point (last_x, last_y, canvas_height, scale);
 
 	if (mode == 'freehand') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, 'blue', 1.0, 1.0);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, 'rgb(0, 0, 255)', 1.0, 1.0);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
@@ -132,9 +132,9 @@ draw_canvas.addEventListener ('mousedown', e => {
 
 });
 
-draw_canvas.addEventListener ('mousemove', e => {
+draw_canvas.addEventListener ('mousemove', (e) => {
 	if (mode == 'freehand') {
-		freehand.freehand (e, current_markup_path, canvas_height, scale);
+		freehand.freehand (e, current_markup_path, current_path_setting, canvas_height, scale);
 	}
 });
 

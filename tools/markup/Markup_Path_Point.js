@@ -15,7 +15,7 @@ class Markup_Path_Point {
 		return { x: pdf_x, y: pdf_y };
 	}
 
-	get pdf_coords () {
+	get_pdf_coords () {
 		return { x: this.pdf_x, y: this.pdf_y };
 	}
 
