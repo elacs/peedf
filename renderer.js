@@ -8,7 +8,10 @@ const Markup_Path = require ('./tools/markup/Markup_Path.js');
 const Markup_Path_Point = require ('./tools/markup/Markup_Path_Point');
 const Markup_Path_Setting = require ('./tools/markup/Markup_Path_Setting');
 
-const pdf_url = './pdf/Regression_Lecture1_Adv.pdf';
+const params = new URLSearchParams (window.location.search);
+const pdf_filepath = params.get ('pdf');
+//console.log (pdf_filepath);
+
 const pdf_canvas = document.getElementById ('pdf_canvas');
 const draw_canvas = document.getElementById ('draw_canvas');
 const pdf_ctx = pdf_canvas.getContext ('2d');
@@ -52,7 +55,7 @@ resize_canvas ();
 pdfjs_dist.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.min.mjs';
 
 // Render PDF page
-pdfjs_dist.getDocument (pdf_url).promise.then ((doc) => {
+pdfjs_dist.getDocument (pdf_filepath).promise.then ((doc) => {
 	pdf_doc = doc;
 	render_page (current_page_num);
 });
@@ -94,7 +97,10 @@ document.getElementById ('select_text_button').addEventListener ('click', () => 
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'text');
 });
 
-document.getElementById ('save_pdf_button').addEventListener ('click', () => {save_pdf.save_pdf (pdf_url, markup_paths);});
+document.getElementById ('save_pdf_button').addEventListener ('click', () => {
+	save_pdf.save_pdf (pdf_filepath, markup_paths);
+	markup_paths = [];
+});
 
 
 // markup event listeners
