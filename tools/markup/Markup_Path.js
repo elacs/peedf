@@ -10,7 +10,7 @@ class Markup_Path {
 
 	render_path (draw_ctx, page_num, canvas_height, scale) {
 		if (this.path_setting.page_num == page_num) {
-			draw_ctx.strokeStyle = this.path_setting.path_color;
+			draw_ctx.strokeStyle = this.path_setting.get_rgba ();
 			draw_ctx.lineWidth = this.path_setting.path_size;
 			
 			const path_points_canvas_coords = this.path_points.map (path_point => path_point.get_canvas_coords (canvas_height, scale));

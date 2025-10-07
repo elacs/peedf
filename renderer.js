@@ -1,5 +1,6 @@
 const pdfjs_dist = require ('pdfjs-dist');
 
+const pan = require ('./tools/markup/event_listeners/pan.js');
 const freehand = require ('./tools/markup/event_listeners/freehand.js');
 const select_markup_mode = require ('./tools/select_markup_mode.js')
 const save_pdf = require ('./tools/save_pdf.js');
@@ -16,6 +17,7 @@ const pdf_canvas = document.getElementById ('pdf_canvas');
 const draw_canvas = document.getElementById ('draw_canvas');
 const pdf_ctx = pdf_canvas.getContext ('2d');
 const draw_ctx = draw_canvas.getContext ('2d');
+const pdf_container = document.getElementById ('pdf_container');
 
 let pdf_doc = null;
 let scale = 1.5;
@@ -24,7 +26,6 @@ let canvas_height = pdf_canvas.height;
 
 // Resize canvas to container
 function resize_canvas () {
-	const pdf_container = document.getElementById ('pdf_container');
 	pdf_canvas.width = pdf_container.clientWidth;
 	pdf_canvas.height = pdf_container.clientHeight;
 	draw_canvas.width = pdf_container.clientWidth;
@@ -40,7 +41,12 @@ function render_page (num) {
 		pdf_canvas.width = viewport.width;
 		draw_canvas.height = viewport.height;
 		draw_canvas.width = viewport.width;
-		
+
+		const left = (Math.max (0, pdf_container.clientWidth - viewport.width) / 2).toString () + 'px';
+		// console.log (left);
+		pdf_canvas.style.left = left;
+		draw_canvas.style.left = left;
+
 		canvas_height = pdf_canvas.height;
 
 		const render_context = { canvasContext: pdf_ctx, viewport: viewport };
@@ -55,11 +61,14 @@ resize_canvas ();
 pdfjs_dist.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.min.mjs';
 
 // Render PDF page
-pdfjs_dist.getDocument (pdf_filepath).promise.then ((doc) => {
-	pdf_doc = doc;
-	render_page (current_page_num);
-});
+function load_and_render_pdf () {
+	pdfjs_dist.getDocument (pdf_filepath).promise.then ((doc) => {
+		pdf_doc = doc;
+		render_page (current_page_num);
+	});
+}
 
+load_and_render_pdf ();
 
 // event listeners
 window.addEventListener ('resize', (e) => {resize_canvas (); render_page (current_page_num)});
@@ -97,9 +106,10 @@ document.getElementById ('select_text_button').addEventListener ('click', () => 
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'text');
 });
 
-document.getElementById ('save_pdf_button').addEventListener ('click', () => {
-	save_pdf.save_pdf (pdf_filepath, markup_paths);
+document.getElementById ('save_pdf_button').addEventListener ('click', async () => {
+	await save_pdf.save_pdf (pdf_filepath, markup_paths);
 	markup_paths = [];
+	load_and_render_pdf ();
 });
 
 
@@ -126,23 +136,52 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 
 	starting_path_point = new Markup_Path_Point.Markup_Path_Point (last_x, last_y, canvas_height, scale);
 
-	if (mode == 'freehand') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, 'rgb(0, 0, 255)', 1.0, 1.0);
+	if (mode === 'freehand') {
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 0, g : 0, b : 255}, 1.0, 1.0);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
 		markup_paths.push (current_markup_path);
-	} else if (mode == 'text') {
+	} else if (mode === 'highlight') {
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 255, g : 255, b : 0}, 12.0, 0.2);
+
+		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
+
+		markup_paths.push (current_markup_path);
+
+	} else if (mode === 'text') {
 		console.log (markup_paths);
 	}
 
 });
 
 draw_canvas.addEventListener ('mousemove', (e) => {
-	if (mode == 'freehand') {
+	if (mode === 'freehand' || mode === 'highlight') {
 		freehand.freehand (e, current_markup_path, current_path_setting, canvas_height, scale);
 	}
 });
 
 draw_canvas.addEventListener ('mouseup', () => { click_held = false; });
 draw_canvas.addEventListener ('mouseout', () => { click_held = false; });
+
+let initial_scroll_left = null;
+let initial_scroll_top = null;
+
+pdf_container.addEventListener ('mousedown', (e) => {
+	if (mode === 'pan') {
+		click_held = true;
+		last_x = e.clientX;
+		last_y = e.clientY;
+		initial_scroll_left = pdf_container.scrollLeft;
+		initial_scroll_top = pdf_container.scrollTop;
+	}
+});
+
+pdf_container.addEventListener ('mousemove', (e) => {
+	if (mode === 'pan') {
+		pan.pan (e, last_x, last_y, initial_scroll_left, initial_scroll_top);
+	}
+});
+
+pdf_container.addEventListener ('mouseup', () => { click_held = false; });
+pdf_container.addEventListener ('mouseout', () => { click_held = false; });

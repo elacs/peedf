@@ -1,4 +1,4 @@
-const Markup_Path_Point = require ('../Markup_Path_Point.js')
+const Markup_Path_Point = require ('../Markup_Path_Point.js');
 
 function freehand (e, current_markup_path, current_path_setting, canvas_height, scale) {
 	if (click_held != true) return;
@@ -6,7 +6,7 @@ function freehand (e, current_markup_path, current_path_setting, canvas_height, 
 	const x = e.clientX - rect.left;
 	const y = e.clientY - rect.top;
 
-	draw_ctx.strokeStyle = current_path_setting.path_color;
+	draw_ctx.strokeStyle = current_path_setting.get_rgba ();
 	draw_ctx.lineWidth = current_path_setting.path_size;
 	draw_ctx.lineCap = 'round';
 	draw_ctx.beginPath ();

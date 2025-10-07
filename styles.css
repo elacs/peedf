@@ -12,14 +12,15 @@ body {
 	height: 90vh;
 	background: #aba9bf;
 	overflow: auto;
-	justify-content: center;
-	align-items: center;
+
+	/* justify-content: center; */
+	/* align-items: center; */
 }
 
 canvas {
 	position: absolute;
 	top: 0;
-	left: 0;
+	margin: auto;
 }
 
 #draw_canvas {

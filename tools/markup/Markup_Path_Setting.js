@@ -7,11 +7,17 @@ class Markup_Path_Setting {
 		this.path_size = path_size;
 		this.path_opacity = path_opacity;
 	}
+	
+	get_rgba () {
+		const { r, g, b } = this.path_color;
+		return 'rgba(' + r + ',' + g + ',' + b + ',' + this.path_opacity + ')';
+	}
 
 	get_pdf_lib_rgb () {
-		const rgb = this.path_color.slice (4, -1).split (',').map (x => x / 255);
+		// const rgb = this.path_color.slice (4, -1).split (',').map (x => x / 255);
+		const { r, g, b } = this.path_color;
 
-		return pdf_lib.rgb (rgb[0], rgb[1], rgb[2]);
+		return pdf_lib.rgb (r / 255, g / 255, b / 255);
 	}
 }
 

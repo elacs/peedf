@@ -15,8 +15,10 @@ async function save_pdf (pdf_filepath, markup_paths) {
 			page.drawLine ({
 				start : markup_paths[i].path_points[j].get_pdf_coords (),
 				end : markup_paths[i].path_points[j + 1].get_pdf_coords (),
-				thickness : markup_paths[i].path_setting.path_width,
-				color : markup_paths[i].path_setting.get_pdf_lib_rgb ()
+				thickness : markup_paths[i].path_setting.path_size / 2,
+				color : markup_paths[i].path_setting.get_pdf_lib_rgb (),
+				opacity : Math.min (markup_paths[i].path_setting.path_opacity * 1.5, 1)
+
 			})
 		}
 	}
@@ -30,7 +32,7 @@ async function save_pdf (pdf_filepath, markup_paths) {
 	// a.download = 'annotated.pdf';
 	// a.click();
 	
-	fs.writeFileSync (pdf_filepath, pdf_bytes);
+	await fs.writeFileSync (pdf_filepath, pdf_bytes);
 }
 
 module.exports = {
