@@ -20,9 +20,12 @@ const draw_ctx = draw_canvas.getContext ('2d');
 const pdf_container = document.getElementById ('pdf_container');
 
 let pdf_doc = null;
-let scale = 1.5;
+let scale = 15;
 let current_page_num = 1;
 let canvas_height = pdf_canvas.height;
+
+const page_number_indicator = document.getElementById ('page_number_indicator');
+const zoom_scale_indicator = document.getElementById ('zoom_scale_indicator');
 
 // Resize canvas to container
 function resize_canvas () {
@@ -34,26 +37,25 @@ function resize_canvas () {
 	canvas_height = pdf_canvas.height;
 }
 
-function render_page (num) {
-	pdf_doc.getPage (num).then ((page) => {
-		const viewport = page.getViewport ({ scale: scale });
-		pdf_canvas.height = viewport.height;
-		pdf_canvas.width = viewport.width;
-		draw_canvas.height = viewport.height;
-		draw_canvas.width = viewport.width;
+async function render_page (num) {
+	const page = await pdf_doc.getPage (num);
+	const viewport = page.getViewport ({ scale: scale / 10 });
+	pdf_canvas.height = viewport.height;
+	pdf_canvas.width = viewport.width;
+	draw_canvas.height = viewport.height;
+	draw_canvas.width = viewport.width;
 
-		const left = (Math.max (0, pdf_container.clientWidth - viewport.width) / 2).toString () + 'px';
-		// console.log (left);
-		pdf_canvas.style.left = left;
-		draw_canvas.style.left = left;
+	const left = (Math.max (0, pdf_container.clientWidth - viewport.width) / 2).toString () + 'px';
+	// console.log (left);
+	pdf_canvas.style.left = left;
+	draw_canvas.style.left = left;
 
-		canvas_height = pdf_canvas.height;
+	canvas_height = pdf_canvas.height;
 
-		const render_context = { canvasContext: pdf_ctx, viewport: viewport };
-		page.render (render_context);
+	const render_context = { canvasContext: pdf_ctx, viewport: viewport };
+	page.render (render_context);
 
-		markup_paths.map ((markup_path) => markup_path.render_path (draw_ctx, num, canvas_height, scale));
-	});
+	markup_paths.map ((markup_path) => markup_path.render_path (draw_ctx, num, canvas_height, scale / 10));
 }
 
 resize_canvas ();
@@ -61,57 +63,100 @@ resize_canvas ();
 pdfjs_dist.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.min.mjs';
 
 // Render PDF page
-function load_and_render_pdf () {
-	pdfjs_dist.getDocument (pdf_filepath).promise.then ((doc) => {
-		pdf_doc = doc;
-		render_page (current_page_num);
-	});
+async function load_and_render_pdf () {
+	pdf_doc = await pdfjs_dist.getDocument (pdf_filepath).promise
+	await render_page (current_page_num);
 }
 
-load_and_render_pdf ();
+load_and_render_pdf ().then (() => {
+	// set indicator values
+	page_number_indicator.text = current_page_num + ' / ' + pdf_doc.numPages;
+	zoom_scale_indicator.text = scale * 10 + '%';
+});
 
 // event listeners
 window.addEventListener ('resize', (e) => {resize_canvas (); render_page (current_page_num)});
 
 // toolbar button event listeners
-document.getElementById ('previous_page_button').addEventListener ('click', () => {
+const previous_page_button = document.getElementById ('previous_page_button');
+const next_page_button = document.getElementById ('next_page_button');
+const zoom_out_button = document.getElementById ('zoom_out_button');
+const zoom_in_button = document.getElementById ('zoom_in_button');
+const select_freehand_button = document.getElementById ('select_freehand_button');
+const select_highlight_button = document.getElementById ('select_highlight_button');
+const select_text_button = document.getElementById ('select_text_button');
+const save_pdf_button = document.getElementById ('save_pdf_button');
+
+// set mode button background colors
+function set_mode_button_background_colors () {
+	switch (mode) {
+		case 'pan':
+			select_freehand_button.classList.remove ('active');
+			select_highlight_button.classList.remove ('active');
+			select_text_button.classList.remove ('active');
+			break;
+		case 'freehand':
+			select_freehand_button.classList.add ('active');
+			select_highlight_button.classList.remove ('active');
+			select_text_button.classList.remove ('active');
+			break;
+		case 'highlight':
+			select_freehand_button.classList.remove ('active');
+			select_highlight_button.classList.add ('active');
+			select_text_button.classList.remove ('active');
+			break;
+		case 'text':
+			select_freehand_button.classList.remove ('active');
+			select_highlight_button.classList.remove ('active');
+			select_text_button.classList.add ('active');
+			break;
+	}	
+}
+
+previous_page_button.addEventListener ('click', () => {
 	current_page_num = Math.max (current_page_num - 1, 1);
 	render_page (current_page_num);
+	page_number_indicator.text = current_page_num + ' / ' + pdf_doc.numPages;
 });
 
-document.getElementById ('next_page_button').addEventListener ('click', () => {
+next_page_button.addEventListener ('click', () => {
 	current_page_num = Math.min (current_page_num + 1, pdf_doc.numPages);
 	render_page (current_page_num);
+	page_number_indicator.text = current_page_num + ' / ' + pdf_doc.numPages;
 });
 
-document.getElementById ('zoom_out_button').addEventListener ('click', () => {
-	scale = Math.max (scale - 0.1, 0.1);
+zoom_out_button.addEventListener ('click', () => {
+	scale = Math.max (scale - 1, 1);
 	render_page (current_page_num);
+	zoom_scale_indicator.text = scale * 10 + '%';
 });
 
-document.getElementById ('zoom_in_button').addEventListener ('click', () => {
-	scale = Math.min (scale + 0.1, 3.0);
+zoom_in_button.addEventListener ('click', () => {
+	scale = Math.min (scale + 1 , 30);
 	render_page (current_page_num);
+	zoom_scale_indicator.text = scale * 10 + '%';
 });
 
-document.getElementById ('select_freehand_button').addEventListener ('click', () => {
+select_freehand_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'freehand');
+	set_mode_button_background_colors ();
 });
 
-document.getElementById ('select_highlight_button').addEventListener ('click', () => {
+select_highlight_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'highlight');
+	set_mode_button_background_colors ();
 });
 
-document.getElementById ('select_text_button').addEventListener ('click', () => {
+select_text_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'text');
+	set_mode_button_background_colors ();
 });
 
-document.getElementById ('save_pdf_button').addEventListener ('click', async () => {
+save_pdf_button.addEventListener ('click', async () => {
 	await save_pdf.save_pdf (pdf_filepath, markup_paths);
 	markup_paths = [];
 	load_and_render_pdf ();
 });
-
 
 // markup event listeners
 
@@ -134,16 +179,16 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 	last_x = e.clientX - rect.left;
 	last_y = e.clientY - rect.top;
 
-	starting_path_point = new Markup_Path_Point.Markup_Path_Point (last_x, last_y, canvas_height, scale);
+	starting_path_point = new Markup_Path_Point.Markup_Path_Point (last_x, last_y, canvas_height, scale / 10);
 
 	if (mode === 'freehand') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 0, g : 0, b : 255}, 1.0, 1.0);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 1.0, 1.0);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
 		markup_paths.push (current_markup_path);
 	} else if (mode === 'highlight') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 255, g : 255, b : 0}, 12.0, 0.2);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 247, g : 127, b : 17 }, 12.0, 0.2);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
@@ -157,7 +202,7 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 
 draw_canvas.addEventListener ('mousemove', (e) => {
 	if (mode === 'freehand' || mode === 'highlight') {
-		freehand.freehand (e, current_markup_path, current_path_setting, canvas_height, scale);
+		freehand.freehand (e, current_markup_path, current_path_setting, canvas_height, scale / 10);
 	}
 });
 
