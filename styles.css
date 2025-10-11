@@ -118,6 +118,6 @@ canvas {
 
 .toolbar_spacer {
 	height: calc(8vh - 16px);
-	width: calc(8vh - 16px);
-	margin: 10px;
+	/* width: calc(8vh - 16px); */
+	margin-top: 10px;
 }
