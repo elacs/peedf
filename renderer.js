@@ -47,13 +47,21 @@ let current_page_num = 1;
 let canvas_height = pdf_canvas.height;
 
 
-function resize_spacers (viewport_width) {
+function resize_toolbar_elements () {
 	// set toolbar spacer sizes
+	const viewport_width = window.innerWidth;
+
 	const margin_width = 10;
+	const button_width = Math.min ((viewport_width - 18 * margin_width) / 10, window.innerHeight * 7 / 100);
 
-	toolbar_spacer_left.style.width = (viewport_width / 2 - zoom_control_box.offsetWidth - page_control_box.offsetWidth - select_freehand_button.offsetWidth - select_highlight_button.offsetWidth / 2 - 5 * margin_width) + 'px';
+	document.querySelector (':root').style.setProperty ('--toolbar_button_width', button_width + 'px');
 
-	toolbar_spacer_right.style.width = (viewport_width / 2 - select_highlight_button.offsetWidth / 2 - select_text_button.offsetWidth - undo_button.offsetWidth - redo_button.offsetWidth - save_pdf_button.offsetWidth - 6 * margin_width) + 'px';
+	// toolbar_spacer_left.style.width = '0px';
+	// toolbar_spacer_right.style.width = '0px';
+
+	toolbar_spacer_left.style.width = Math.max (0, viewport_width / 2 - 5.5 * button_width - 8 * margin_width) + 'px';
+
+	toolbar_spacer_right.style.width = Math.max (0, viewport_width / 2 - 4.5 * button_width - 10 * margin_width) + 'px';
 }
 
 // Resize canvas to container
@@ -87,7 +95,7 @@ async function render_page (num) {
 
 	markup_paths.map ((markup_path) => markup_path.render_path (draw_ctx, num, canvas_height, scale / 10));
 
-	resize_spacers (pdf_container.offsetWidth);
+	resize_toolbar_elements ();
 }
 
 resize_canvas ();
@@ -112,7 +120,7 @@ window.addEventListener ('resize', (e) => {resize_canvas (); render_page (curren
 // toolbar button event listeners
 
 // set mode button background colors
-function set_mode_button_background_colors () {
+function set_mode_button_colors () {
 	switch (mode) {
 		case 'pan':
 			select_freehand_button.classList.remove ('active');
@@ -134,7 +142,20 @@ function set_mode_button_background_colors () {
 			select_highlight_button.classList.remove ('active');
 			select_text_button.classList.add ('active');
 			break;
-	}	
+	}
+}
+
+function set_undo_redo_button_colors () {
+	if (markup_paths.length > 0) {
+		undo_button.classList.add ('clickable');
+	} else {
+		undo_button.classList.remove ('clickable');
+	}
+	if (undone_markup_paths.length > 0) {
+		redo_button.classList.add ('clickable');
+	} else {
+		redo_button.classList.remove ('clickable');
+	}
 }
 
 previous_page_button.addEventListener ('click', () => {
@@ -163,26 +184,28 @@ zoom_in_button.addEventListener ('click', () => {
 
 select_freehand_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'freehand');
-	set_mode_button_background_colors ();
+	set_mode_button_colors ();
 });
 
 select_highlight_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'highlight');
-	set_mode_button_background_colors ();
+	set_mode_button_colors ();
 });
 
 select_text_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'text');
-	set_mode_button_background_colors ();
+	set_mode_button_colors ();
 });
 
 undo_button.addEventListener ('click', async () => {
 	undo_redo.undo (markup_paths, undone_markup_paths);
+	set_undo_redo_button_colors ();
 	await render_page (current_page_num);
 });
 
 redo_button.addEventListener ('click', async () => {
 	undo_redo.redo (markup_paths, undone_markup_paths);
+	set_undo_redo_button_colors ();
 	await render_page (current_page_num);
 });
 
@@ -190,6 +213,7 @@ save_pdf_button.addEventListener ('click', async () => {
 	await save_pdf.save_pdf (pdf_filepath, markup_paths);
 	markup_paths = [];
 	// undone_markup_paths = [];
+	set_undo_redo_button_colors ();
 	load_and_render_pdf ();
 });
 
@@ -247,6 +271,7 @@ draw_canvas.addEventListener ('mouseup', () => {
 		click_held = false;
 		if (mode === 'freehand' || mode === 'highlight') {
 			undone_markup_paths = [];
+			set_undo_redo_button_colors ();
 		}
 	}
 });
@@ -255,6 +280,7 @@ draw_canvas.addEventListener ('mouseout', () => {
 		click_held = false;
 		if (mode === 'freehand' || mode === 'highlight') {
 			undone_markup_paths = [];
+			set_undo_redo_button_colors ();
 		}
 	}
 });let initial_scroll_left = null;
