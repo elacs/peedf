@@ -145,3 +145,10 @@ canvas {
 	/* width: calc(8vh - 16px); */
 	margin-top: 10px;
 }
+
+#toolbar img {
+	user-drag: none;
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+	pointer-events: none;
+}
