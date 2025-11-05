@@ -14,6 +14,8 @@ const params = new URLSearchParams (window.location.search);
 const pdf_filepath = params.get ('pdf');
 //console.log (pdf_filepath);
 
+document.title = 'peedf @ ' + pdf_filepath;
+
 const pdf_canvas = document.getElementById ('pdf_canvas');
 const draw_canvas = document.getElementById ('draw_canvas');
 const pdf_ctx = pdf_canvas.getContext ('2d');
