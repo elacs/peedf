@@ -6,8 +6,8 @@ small pdf viewer / editor cos im fed up with everything else on the market lol
 - ~~add pan function~~
 - ~~add highlight function~~
 - add text function
-- add undo / redo function
+- ~~add undo / redo function~~
 - add erase function
-- add page indicator
-- add scale indicator
+- ~~add page indicator~~
+- ~~add scale indicator~~
 - beautify the UI

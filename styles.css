@@ -71,6 +71,11 @@ canvas {
 	color: #d4f2d2;
 }
 
+.toolbar_button.clickable {
+	background-color: rgba(52, 17, 63, 0.3);
+	color: #d4f2d2;
+}
+
 .toolbar_button_icon {
 	width: calc(var(--toolbar_button_width) * 0.25);
 	height: calc(var(--toolbar_button_width) * 0.25);
@@ -79,11 +84,6 @@ canvas {
 .undo_redo_button:hover {
 	background-color: rgba(0, 0, 0, 0);
 	color: #34113f;
-}
-
-.undo_redo_button.clickable {
-	background-color: rgba(52, 17, 63, 0.3);
-	color: #d4f2d2;
 }
 
 .undo_redo_button.clickable:hover {
