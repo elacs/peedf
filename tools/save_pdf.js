@@ -25,13 +25,6 @@ async function save_pdf (pdf_filepath, markup_paths) {
 
 	const pdf_bytes = await pdf_doc.save ();
 
-	// const blob = new Blob ([pdf_bytes], { type : 'application/pdf' });
-	// const url = URL.createObjectURL (blob);
-	// const a = document.createElement ('a');
-	// a.href = url;
-	// a.download = 'annotated.pdf';
-	// a.click();
-	
 	await fs.writeFileSync (pdf_filepath, pdf_bytes);
 }
 

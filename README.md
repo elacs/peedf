@@ -11,3 +11,6 @@ small pdf viewer / editor cos im fed up with everything else on the market lol
 - ~~add page indicator~~
 - ~~add scale indicator~~
 - beautify the UI
+- support encrypted pdfs
+	- PDFJS.getDocument ({url, password}) 
+	- pdf-lib-with-encrypt (?)

@@ -245,6 +245,7 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 
 	if (mode === 'freehand') {
 		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 1.0, 1.0);
+		// current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 255, g : 0, b : 0 }, 1.0, 1.0);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
