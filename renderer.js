@@ -2,13 +2,15 @@ const pdfjs_dist = require ('pdfjs-dist');
 
 const pan = require ('./tools/markup/event_listeners/pan.js');
 const freehand = require ('./tools/markup/event_listeners/freehand.js');
+const handle_text_input = require ('./tools/text_annotation/event_listeners/handle_text_input.js');
 const select_markup_mode = require ('./tools/select_markup_mode.js')
 const save_pdf = require ('./tools/save_pdf.js');
 const undo_redo = require ('./tools/undo_redo.js');
 
 const Markup_Path = require ('./tools/markup/Markup_Path.js');
-const Markup_Path_Point = require ('./tools/markup/Markup_Path_Point');
-const Markup_Path_Setting = require ('./tools/markup/Markup_Path_Setting');
+const Markup_Path_Point = require ('./tools/markup/Markup_Path_Point.js');
+const Markup_Path_Setting = require ('./tools/markup/Markup_Path_Setting.js');
+// const Text_Annotation = require ('./tools/text_annotation/Text_Annotation')
 
 const params = new URLSearchParams (window.location.search);
 const pdf_filepath = params.get ('pdf');
@@ -21,6 +23,7 @@ const draw_canvas = document.getElementById ('draw_canvas');
 const pdf_ctx = pdf_canvas.getContext ('2d');
 const draw_ctx = draw_canvas.getContext ('2d');
 const pdf_container = document.getElementById ('pdf_container');
+const text_annotations_div = document.getElementById ('text_annotations_div');
 
 // toolbar elements
 const previous_page_button = document.getElementById ('previous_page_button');
@@ -70,8 +73,12 @@ function resize_toolbar_elements () {
 function resize_canvas () {
 	pdf_canvas.width = pdf_container.clientWidth;
 	pdf_canvas.height = pdf_container.clientHeight;
+
 	draw_canvas.width = pdf_container.clientWidth;
 	draw_canvas.height = pdf_container.clientHeight;
+	
+	// text_annotations_div.style.width = pdf_container.clientWidth + 'px';
+	// text_annotations_div.style.height = pdf_container.clientHeight + 'px';
 
 	canvas_height = pdf_canvas.height;
 }
@@ -83,19 +90,24 @@ async function render_page (num) {
 	pdf_canvas.width = viewport.width;
 	draw_canvas.height = viewport.height;
 	draw_canvas.width = viewport.width;
+	text_annotations_div.style.height = viewport.height + 'px';
+	text_annotations_div.style.width = viewport.width + 'px';
 
 	// position pdf_container in center of page
 	const left = (Math.max (0, pdf_container.clientWidth - viewport.width) / 2).toString () + 'px';
 	// console.log (left);
 	pdf_canvas.style.left = left;
 	draw_canvas.style.left = left;
+	text_annotations_div.style.left = left;
 
 	canvas_height = pdf_canvas.height;
 
 	const render_context = { canvasContext: pdf_ctx, viewport: viewport };
 	page.render (render_context);
 
-	markup_paths.map ((markup_path) => markup_path.render_path (draw_ctx, num, canvas_height, scale / 10));
+	text_annotations_div.replaceChildren ();
+
+	markup_paths.map ((markup_path) => markup_path.render_annotation (draw_canvas,text_annotations_div, num, scale / 10));
 
 	resize_toolbar_elements ();
 }
@@ -234,6 +246,7 @@ let undone_markup_paths = [];
 let starting_path_point = null;
 let current_markup_path = null;
 let current_path_setting = null;
+// let current_input_box = null;
 
 draw_canvas.addEventListener ('mousedown', (e) => {
 	click_held = true;
@@ -257,8 +270,17 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 
 		markup_paths.push (current_markup_path);
 
-	} else if (mode === 'text') {
-		console.log (markup_paths);
+	}
+});
+draw_canvas.addEventListener ('click', (e) => {
+	if (mode === 'text') {
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 16.0, 1.0);
+
+		handle_text_input.spawn_text_input_box (current_path_setting, starting_path_point, text_annotations_div, markup_paths, current_page_num, scale / 10, () => {
+			undone_markup_paths = [];
+			set_undo_redo_button_colors ();
+		});
+
 	}
 
 });
@@ -286,7 +308,9 @@ draw_canvas.addEventListener ('mouseout', () => {
 			set_undo_redo_button_colors ();
 		}
 	}
-});let initial_scroll_left = null;
+});
+
+let initial_scroll_left = null;
 let initial_scroll_top = null;
 
 pdf_container.addEventListener ('mousedown', (e) => {

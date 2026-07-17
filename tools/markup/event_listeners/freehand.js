@@ -7,7 +7,7 @@ function freehand (e, current_markup_path, current_path_setting, canvas_height, 
 	const y = e.clientY - rect.top;
 
 	draw_ctx.strokeStyle = current_path_setting.get_rgba ();
-	draw_ctx.lineWidth = current_path_setting.path_size;
+	draw_ctx.lineWidth = current_path_setting.path_size * scale;
 	draw_ctx.lineCap = 'round';
 	draw_ctx.beginPath ();
 	draw_ctx.moveTo (last_x, last_y);
