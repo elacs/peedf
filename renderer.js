@@ -274,7 +274,7 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 });
 draw_canvas.addEventListener ('click', (e) => {
 	if (mode === 'text') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 16.0, 1.0);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 12.0, 1.0);
 
 		handle_text_input.spawn_text_input_box (current_path_setting, starting_path_point, text_annotations_div, markup_paths, current_page_num, scale / 10, () => {
 			undone_markup_paths = [];

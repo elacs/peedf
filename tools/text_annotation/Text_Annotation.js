@@ -32,16 +32,21 @@ class Text_Annotation {
 
 	}
 
-	save_to_pdf_doc (pdf_doc) {
+	save_to_pdf_doc (pdf_doc, font) {
 		const page = pdf_doc.getPages ()[this.path_setting.page_num - 1];
 		
-		const pdf_coords = this.anchor.get_pdf_coords ()
+		const pdf_coords = this.anchor.get_pdf_coords ();
+		
+		const font_size = this.path_setting.path_size;
+
+		// const save_position_offset = {  }
 
 		page.drawText (this.text, {
 			x: pdf_coords.x,
-			y: pdf_coords.y - this.path_setting.path_size * 0.75,
-			size: this.path_setting.path_size, // font size
-			// font: await pdf_doc.embedFont (StandardFonts.TimesRoman),
+			y: pdf_coords.y - this.path_setting.path_size,
+			size: font_size, // font size
+			lineHeight: 1.2 * font_size,
+			font: font,
 			color:	this.path_setting.get_pdf_lib_rgb (),
 		})
 

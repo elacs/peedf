@@ -33,7 +33,7 @@ class Markup_Path {
 		return this.path_points.map ((path_point, i) => (i === 0 ? `M ${path_point.pdf_x} ${path_point.pdf_y}` : `L ${path_point.pdf_x} ${path_point.pdf_y}`)).join (' ');
 	}
 
-	save_to_pdf_doc (pdf_doc) {
+	save_to_pdf_doc (pdf_doc, _) {
 		const page = pdf_doc.getPages ()[this.path_setting.page_num - 1];
 
 		for (let j = 0; j < this.path_points.length - 1; j++) {

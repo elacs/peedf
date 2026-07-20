@@ -163,7 +163,7 @@ canvas {
 
 .text_annotation {
 	position: absolute;
-	font-family: Arial;
+	font-family: Helvetica;
 	line-height: 1.2;
 	white-space: pre-wrap;
 	pointer-events: auto;
