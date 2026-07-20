@@ -48,6 +48,7 @@ canvas {
 	margin-right: 10px;
 	margin-bottom: 0px;
 	border-radius: 12px;
+	user-select: none;
 }
 
 .toolbar_button {

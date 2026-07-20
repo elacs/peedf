@@ -28,7 +28,6 @@ function spawn_text_input_box (current_path_setting, starting_path_point, text_a
 	input_box.style.color = color;
 	input_box.style.borderWidth = input_box_border_width + 'px';
 	input_box.style.minHeight = (font_size * 1.2) + 'px';
-	// input_box.style.minWidth = '100px';
 
 	text_annotations_div.appendChild (input_box);
 	input_box.focus ();
