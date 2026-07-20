@@ -147,9 +147,9 @@ canvas {
 }
 
 #toolbar img {
-	user-drag: none;
-	-webkit-user-drag: none;
-	-webkit-user-select: none;
+	/* user-drag: none; */
+	/* -webkit-user-drag: none; */
+	/* -webkit-user-select: none; */
 	pointer-events: none;
 }
 
@@ -158,7 +158,7 @@ canvas {
 	top: 0;
 	margin: auto;
 	pointer-events: none;
-	z-index: 1;
+	z-index: 2;
 }
 
 .text_annotation {
@@ -166,5 +166,16 @@ canvas {
 	font-family: Helvetica;
 	line-height: 1.2;
 	white-space: pre-wrap;
+	background: transparent;
+	outline: none;
+	/* pointer-events: auto; */
+	user-select: none;
+}
+
+.text_input_box {
+	resize: horizontal;
+	overflow: hidden;
 	pointer-events: auto;
+	border-style: dashed;
+	border-color: #ccc;
 }

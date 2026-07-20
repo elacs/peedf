@@ -11,7 +11,6 @@ class Text_Annotation {
 	}
 
 	render_annotation (_, text_annotations_div, page_num, scale) {
-
 		if (this.path_setting.page_num != page_num) { return; }
 
 		const canvas_coords = this.anchor.get_canvas_coords (draw_canvas.height, scale);
@@ -29,7 +28,6 @@ class Text_Annotation {
 		// text_element.style.cursor = 'text';
 
 		text_annotations_div.appendChild (text_element);
-
 	}
 
 	save_to_pdf_doc (pdf_doc, font) {

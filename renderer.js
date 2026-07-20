@@ -246,7 +246,6 @@ let undone_markup_paths = [];
 let starting_path_point = null;
 let current_markup_path = null;
 let current_path_setting = null;
-// let current_input_box = null;
 
 draw_canvas.addEventListener ('mousedown', (e) => {
 	click_held = true;

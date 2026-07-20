@@ -1,30 +1,41 @@
 const Text_Annotation = require ('../Text_Annotation.js')
 
+function automatically_adjust_height (input_box) {
+	input_box.style.height = 'auto';
+	input_box.style.height = input_box.scrollHeight + 'px';
+}
+
 function spawn_text_input_box (current_path_setting, starting_path_point, text_annotations_div, annotations_lis, page_num, scale, cleanup_undo_redo) {
 	
 	const canvas_coords = starting_path_point.get_canvas_coords (text_annotations_div.clientHeight, scale);
 	const font_size = current_path_setting.path_size * scale;
 	const color = current_path_setting.get_rgba ();
 
-	const input_box_border_width = 1;
+	const input_box_border_width = 2;
 
 	const input_box = document.createElement ('textarea');
 
-	input_box.classList.add ('text_annotation');
+	input_box.classList.add ('text_annotation', 'text_input_box');
 
 	input_box.style.left = (canvas_coords.x - input_box_border_width - 2) + 'px';
 	input_box.style.top = (canvas_coords.y - input_box_border_width - 2) + 'px';
 
+	const max_width = text_annotations_div.clientWidth - canvas_coords.x;
+	input_box.style.width = Math.min (max_width, font_size * 12) + 'px';
+	input_box.style.height = 'auto';
+
 	input_box.style.fontSize = font_size + 'px';
 	input_box.style.color = color;
-	input_box.style.background = 'transparent';
-	input_box.style.border = input_box_border_width + 'px dashed #ccc';
-	input_box.style.outline = 'none';
-	input_box.style.minHeight = '20px';
-	input_box.style.minWidth = '100px';
+	input_box.style.borderWidth = input_box_border_width + 'px';
+	input_box.style.minHeight = (font_size * 1.2) + 'px';
+	// input_box.style.minWidth = '100px';
 
 	text_annotations_div.appendChild (input_box);
 	input_box.focus ();
+	
+	automatically_adjust_height (input_box);
+
+	input_box.addEventListener ('input', () => { automatically_adjust_height (input_box); });
 
 	input_box.addEventListener ('blur', () => {
 		commit_text_annotation (input_box.value.trim (), input_box.clientWidth, current_path_setting, starting_path_point, text_annotations_div, annotations_lis, page_num, scale);
@@ -36,7 +47,7 @@ function spawn_text_input_box (current_path_setting, starting_path_point, text_a
 		if (e.key === 'Escape') {
 			e.preventDefault ();
 			input_box.blur ();
-		}
+		};
 	});
 	
 }
