@@ -6,7 +6,8 @@ small pdf viewer / editor cos im fed up with everything else on the market lol
 - ~~add pan function~~
 - ~~add highlight function~~
 - add text function
-	- render and saved positions seem slightly off from each other
+	- ~~render and saved positions seem slightly off from each other~~
+	- add methods to change font size, color
 - ~~add undo / redo function~~
 - add erase function
 - ~~add page indicator~~
