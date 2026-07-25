@@ -37,10 +37,17 @@ const undo_button = document.getElementById ('undo_button');
 const redo_button = document.getElementById ('redo_button');
 const save_pdf_button = document.getElementById ('save_pdf_button');
 
-const zoom_control_box = document.getElementById ('zoom_control_box');
-const page_control_box = document.getElementById ('page_control_box');
+// const zoom_control_box = document.getElementById ('zoom_control_box');
+// const page_control_box = document.getElementById ('page_control_box');
 const zoom_scale_indicator = document.getElementById ('zoom_scale_indicator');
 const page_number_indicator = document.getElementById ('page_number_indicator');
+
+const path_control_box = document.getElementById ('path_control_box');
+const path_color_indicator_lis = [0, 1, 2].map ((i) => document.getElementById ('path_color_indicator_' + i));
+const path_color_indicator_button_lis = [0, 1, 2].map ((i) => document.getElementById ('path_color_indicator_button_' + i));
+const path_size_indicator = document.getElementById ('path_size_indicator');
+const increase_path_size_button = document.getElementById ('increase_path_size_button');
+const decrease_path_size_button = document.getElementById ('decrease_path_size_button');
 
 const toolbar_spacer_left = document.getElementById ('toolbar_spacer_left');
 const toolbar_spacer_right = document.getElementById ('toolbar_spacer_right');
@@ -61,10 +68,7 @@ function resize_toolbar_elements () {
 
 	document.querySelector (':root').style.setProperty ('--toolbar_button_width', button_width + 'px');
 
-	// toolbar_spacer_left.style.width = '0px';
-	// toolbar_spacer_right.style.width = '0px';
-
-	toolbar_spacer_left.style.width = Math.max (0, viewport_width / 2 - 5.5 * button_width - 8 * margin_width) + 'px';
+	toolbar_spacer_left.style.width = Math.max (0, viewport_width / 2 - 7.5 * button_width - 10 * margin_width) + 'px';
 
 	toolbar_spacer_right.style.width = Math.max (0, viewport_width / 2 - 4.5 * button_width - 10 * margin_width) + 'px';
 }
@@ -107,7 +111,7 @@ async function render_page (num) {
 
 	text_annotations_div.replaceChildren ();
 
-	markup_paths.map ((markup_path) => markup_path.render_annotation (draw_canvas,text_annotations_div, num, scale / 10));
+	markup_paths.forEach ((markup_path) => markup_path.render_annotation (draw_canvas,text_annotations_div, num, scale / 10));
 
 	resize_toolbar_elements ();
 }
@@ -172,6 +176,32 @@ function set_undo_redo_button_colors () {
 	}
 }
 
+function set_path_settables_indicators (mode) {
+	if (mode !== 'pan') {
+		path_control_box.style.visibility = 'visible';
+
+		const current_path_settables = path_settables_dict[mode];
+		path_size_indicator.text = (current_path_settables.size / 10).toFixed (1);
+
+		path_color_indicator_button_lis.forEach ((path_color_indicator_button, i) => {
+			if (i == current_path_settables.color) {
+				path_color_indicator_button.style.backgroundColor = 'rgba(52, 17, 63, 0.6)';
+			} else {
+				path_color_indicator_button.style.backgroundColor = null;
+			}
+		});
+	} else {
+		path_control_box.style.visibility = 'hidden';
+
+		path_size_indicator.text = '';
+
+		path_color_indicator_button_lis.forEach ((path_color_indicator_button, i) => {
+			path_color_indicator_button.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+		});
+	}
+}
+set_path_settables_indicators ('pan');
+
 previous_page_button.addEventListener ('click', () => {
 	current_page_num = Math.max (current_page_num - 1, 1);
 	render_page (current_page_num);
@@ -199,16 +229,19 @@ zoom_in_button.addEventListener ('click', () => {
 select_freehand_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'freehand');
 	set_mode_button_colors ();
+	set_path_settables_indicators (mode);
 });
 
 select_highlight_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'highlight');
 	set_mode_button_colors ();
+	set_path_settables_indicators (mode);
 });
 
 select_text_button.addEventListener ('click', () => {
 	mode = select_markup_mode.select_markup_mode ('pan', mode, 'text');
 	set_mode_button_colors ();
+	set_path_settables_indicators (mode);
 });
 
 undo_button.addEventListener ('click', async () => {
@@ -246,6 +279,51 @@ let undone_markup_paths = [];
 let starting_path_point = null;
 let current_markup_path = null;
 let current_path_setting = null;
+let current_path_settables = null;
+
+const path_settables_dict = {
+	'freehand': { size: 10, color: 2 },
+	'highlight': { size: 120, color: 0 },
+	'text': { size: 120, color: 2 }
+};
+
+const path_size_delta_dict = {
+	'freehand': { delta: 2, lower: 4 },
+	'highlight': { delta: 10, lower: 40 },
+	'text': { delta: 5, lower: 20 }
+};
+
+const path_colors_lis = [{ r : 247, g : 127, b : 17 },
+	{ r : 0, g : 99, b : 93 },
+	{ r : 5, g : 130, b : 202 }
+];
+
+path_color_indicator_lis.forEach ((path_color_indicator, i) => {
+	path_color_indicator.style.backgroundColor = new Markup_Path_Setting.Markup_Path_Setting (null, path_colors_lis[i], null, 1.0).get_rgba ();
+});
+
+path_color_indicator_button_lis.forEach ((path_color_indicator_button, i) => {
+	path_color_indicator_button.addEventListener ('click', () => {
+		if (mode !== 'pan') {
+			path_settables_dict[mode].color = i;
+			set_path_settables_indicators (mode);
+		}
+	});
+});
+
+increase_path_size_button.addEventListener ('click', () => {
+	if (mode !== 'pan') {
+		path_settables_dict[mode].size += path_size_delta_dict[mode].delta;
+		set_path_settables_indicators (mode);
+	}
+});
+
+decrease_path_size_button.addEventListener ('click', () => {
+	if (mode !== 'pan') {
+		path_settables_dict[mode].size = Math.max (path_settables_dict[mode].size - path_size_delta_dict[mode].delta, path_size_delta_dict[mode].lower);
+		set_path_settables_indicators (mode);
+	}
+});
 
 draw_canvas.addEventListener ('mousedown', (e) => {
 	click_held = true;
@@ -254,16 +332,17 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 	last_y = e.clientY - rect.top;
 
 	starting_path_point = new Markup_Path_Point.Markup_Path_Point (last_x, last_y, canvas_height, scale / 10);
+	
+	current_path_settables = path_settables_dict[mode];
 
 	if (mode === 'freehand') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 1.0, 1.0);
-		// current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 255, g : 0, b : 0 }, 1.0, 1.0);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, path_colors_lis[current_path_settables.color], current_path_settables.size / 10, 1.0);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
 		markup_paths.push (current_markup_path);
 	} else if (mode === 'highlight') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 247, g : 127, b : 17 }, 12.0, 0.2);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, path_colors_lis[current_path_settables.color], current_path_settables.size / 10, 0.06);
 
 		current_markup_path = new Markup_Path.Markup_Path (current_path_setting, starting_path_point);
 
@@ -271,9 +350,10 @@ draw_canvas.addEventListener ('mousedown', (e) => {
 
 	}
 });
+
 draw_canvas.addEventListener ('click', (e) => {
 	if (mode === 'text') {
-		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, { r : 5, g : 130, b : 202 }, 12.0, 1.0);
+		current_path_setting = new Markup_Path_Setting.Markup_Path_Setting (current_page_num, path_colors_lis[current_path_settables.color], current_path_settables.size / 10, 1.0);
 
 		handle_text_input.spawn_text_input_box (current_path_setting, starting_path_point, text_annotations_div, markup_paths, current_page_num, scale / 10, () => {
 			undone_markup_paths = [];
@@ -281,7 +361,6 @@ draw_canvas.addEventListener ('click', (e) => {
 		});
 
 	}
-
 });
 
 draw_canvas.addEventListener ('mousemove', (e) => {

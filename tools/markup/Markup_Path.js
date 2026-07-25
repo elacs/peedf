@@ -1,3 +1,5 @@
+const pdf_lib = require ('pdf-lib');
+
 class Markup_Path {
 	constructor (path_setting, starting_path_point) {
 		this.path_setting = path_setting;
@@ -38,11 +40,12 @@ class Markup_Path {
 
 		for (let j = 0; j < this.path_points.length - 1; j++) {
 			page.drawLine ({
+				lineCap: pdf_lib.LineCapStyle.Round,
 				start : this.path_points[j].get_pdf_coords (),
 				end : this.path_points[j + 1].get_pdf_coords (),
 				thickness : this.path_setting.path_size,
 				color : this.path_setting.get_pdf_lib_rgb (),
-				opacity : Math.min (this.path_setting.path_opacity * 1.5, 1)
+				opacity : Math.min (this.path_setting.path_opacity, 1)
 			})
 		}
 	}

@@ -7,9 +7,7 @@ async function save_pdf (pdf_filepath, markup_paths) {
 
 	const helvetica_font = await pdf_doc.embedFont (pdf_lib.StandardFonts.Helvetica);
 
-	for (let i = 0; i < markup_paths.length; i++) {
-		markup_paths[i].save_to_pdf_doc (pdf_doc, helvetica_font);
-	}
+	markup_paths.forEach ((markup_path) => markup_path.save_to_pdf_doc (pdf_doc, helvetica_font));
 
 	const pdf_bytes = await pdf_doc.save ();
 

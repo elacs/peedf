@@ -154,6 +154,60 @@ canvas {
 	pointer-events: none;
 }
 
+#path_size_indicator {
+	height: calc(var(--toolbar_button_width) - 12px);
+	width: calc(var(--toolbar_button_width) * 2 / 3 - 3px - 6px);
+	left: calc(var(--toolbar_button_width) + 3px);
+}
+
+#increase_path_size_button {
+	position: absolute;
+	right: 6px;
+	height: calc(var(--toolbar_button_width) / 2 - 7px);
+	width: calc(var(--toolbar_button_width) * 1 / 3 - 2px);
+}
+
+#decrease_path_size_button {
+	position: absolute;
+	right: 6px;
+	height: calc(var(--toolbar_button_width) / 2 - 7px);
+	width: calc(var(--toolbar_button_width) * 1 / 3 - 2px);
+	margin-top: calc(var(--toolbar_button_width) / 2 + 1px);
+}
+
+.path_size_button_icon {
+	width: calc(var(--toolbar_button_width) * 0.125);
+	height: calc(var(--toolbar_button_width) * 0.125);
+}
+
+#path_color_indicator_button_0 {
+	margin-top: 6px;
+}
+
+#path_color_indicator_button_1 {
+	margin-top: calc(var(--toolbar_button_width) / 3 - 16px / 3 + 8px);
+}
+
+#path_color_indicator_button_2 {
+	margin-top: calc(var(--toolbar_button_width) * 2 / 3 - 32px / 3 + 10px);
+}
+
+.path_color_indicator_button {
+	position: absolute;
+	left: 6px;
+	height: calc(var(--toolbar_button_width) / 3 - 16px / 3);
+	width: calc(var(--toolbar_button_width) - 12px);
+}
+
+.path_color_indicator {
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	height: calc(var(--toolbar_button_width) / 3 - 16px / 3 - 4px);
+	width: calc(var(--toolbar_button_width) - 12px - 4px);
+	border-radius: 6px;
+}
+
 #text_annotations_div {
 	position: absolute;
 	top: 0;
