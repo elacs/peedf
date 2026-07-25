@@ -294,7 +294,7 @@ const path_size_delta_dict = {
 };
 
 const path_colors_lis = [{ r : 247, g : 127, b : 17 },
-	{ r : 0, g : 99, b : 93 },
+	{ r : 107, g : 162, b : 146 },
 	{ r : 5, g : 130, b : 202 }
 ];
 
