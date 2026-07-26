@@ -1,15 +1,30 @@
 {
-  "name": "pee-dee-eff",
+  "name": "peedf",
   "version": "0.0.1",
   "main": "main.js",
+  "author": "elacs",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+	"build": "electron-builder"
+  },
+  "build": {
+	"appId": "com.elacs.peedf",
+	"mac": {
+		"target": "dmg"
+	},
+	"win": {
+		"target": "nsis"
+	},
+	"linux": {
+		"target": "AppImage"
+	}
   },
   "dependencies": {
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.149"
   },
   "devDependencies": {
-    "electron": "^38.2.0"
+    "electron": "^38.2.0",
+    "electron-builder": "^26.15.3"
   }
 }

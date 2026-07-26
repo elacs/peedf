@@ -2,12 +2,46 @@
 
 small pdf viewer / editor cos im fed up with everything else on the market lol
 
+## prerequisites
+
+- latest version of [Node.js](https://nodejs.org) and npm
+
+## setup
+
+1. clone the repo
+```bash
+git clone https://github.com/elacs/peedf.git
+cd peedf
+```
+
+2. install dependencies
+```bash
+npm install
+```
+
+3. run app in development mode
+```
+npm start /path/to/document.pdf
+```
+
+### building
+
+this project uses electron-builder to package the app into standalone executables
+
+```bash
+npm run build
+```
+
+## attributions
+for a full list of third-party icon attributions, see [CREDITS.md](CREDITS.md)
+
 ## TODO
+
 - ~~add pan function~~
 - ~~add highlight function~~
-- add text function
+- ~~add text function~~
 	- ~~render and saved positions seem slightly off from each other~~
-	- add methods to change font size, color
+	- ~~add methods to change font size, color~~
 - ~~add undo / redo function~~
 - add erase function
 - ~~add page indicator~~
