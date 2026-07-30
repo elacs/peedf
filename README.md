@@ -19,9 +19,14 @@ cd peedf
 npm install
 ```
 
-3. run app in development mode
-```
+3. run app in development mode with pdf filepath:
+```bash
 npm start /path/to/document.pdf
+```
+
+or standalone (opens file picker):
+```bash
+npm start
 ```
 
 ### building
@@ -32,15 +37,20 @@ this project uses electron-builder to package the app into standalone executable
 npm run build
 ```
 
+the built executable will be generated in the `dist/` directory
+
 ### running
 
-the built executable can be run from the terminal
+the built executable can be run from the terminal with pdf filepath
 
 ```bash
 /path/to/peedf_executable /path/to/document.pdf
 ```
 
-add to path or whatever
+or standalone (opens file picker):
+```bash
+/path/to/peedf_executable
+```
 
 ## attributions
 for a full list of third-party icon attributions, see [CREDITS.md](CREDITS.md)
