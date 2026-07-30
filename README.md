@@ -40,6 +40,8 @@ the built executable can be run from the terminal
 /path/to/peedf_executable /path/to/document.pdf
 ```
 
+add to path or whatever
+
 ## attributions
 for a full list of third-party icon attributions, see [CREDITS.md](CREDITS.md)
 
@@ -61,4 +63,4 @@ for a full list of third-party icon attributions, see [CREDITS.md](CREDITS.md)
 - some pdfs have different coordinate systems?
 - need to refactor renderer.js
 - add app icon
-- support running standalone (without command line arg)
+- ~~support running standalone (without command line arg)~~

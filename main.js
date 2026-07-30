@@ -32,9 +32,7 @@ app.on ('ready', async () => {
 		const result = await dialog.showOpenDialog ({
 			title: 'select PDF file',
 			properties: ['openFile'],
-			filters: [
-				{ name: 'PDF Documents', extensions: ['pdf'] }
-			]
+			filters: [{ name: 'PDF Documents', extensions: ['pdf'] }]
 		});
 		
 		if (result.cancelled || result.filePaths.length === 0) {
