@@ -55,6 +55,18 @@ or standalone (opens file picker):
 ## attributions
 for a full list of third-party icon attributions, see [CREDITS.md](CREDITS.md)
 
+## Copyright & License
+
+### Source Code
+
+The source code of this project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute the code.
+
+### Branding & Assets
+
+The `peedf` name, logo, and app icon (located in the `build/` directory) are **Copyright (c) 2026 [elacs]**. All Rights Reserved.
+
+You may use these assets exclusively for the purpose of compiling and running this application for personal use. You may not extract, modify, redistribute, or use these assets in any other project or derivative work without explicit permission.
+
 ## TODO
 
 - ~~add pan function~~
@@ -72,5 +84,5 @@ for a full list of third-party icon attributions, see [CREDITS.md](CREDITS.md)
 	- pdf-lib-with-encrypt (?)
 - some pdfs have different coordinate systems?
 - need to refactor renderer.js
-- add app icon
+- ~~add app icon~~
 - ~~support running standalone (without command line arg)~~
